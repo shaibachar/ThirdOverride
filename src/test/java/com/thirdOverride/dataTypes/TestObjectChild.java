@@ -4,7 +4,7 @@ import com.thirdOverride.aspect.OverrideThirdParty;
 
 public class TestObjectChild extends TestObjectFather{
 
-    @OverrideThirdParty
+    @OverrideThirdParty(overrideDateFormat="dd-MM-yyyy HH:mm:ss",overrideDateValue="11-01-2017 22:28:00")
     public void printer(){
         System.out.println("child");
     }
