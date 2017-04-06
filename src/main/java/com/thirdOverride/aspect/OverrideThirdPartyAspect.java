@@ -13,34 +13,37 @@ import com.thirdOverride.OverrideThirdPartyClassMapper;
 @Aspect
 public class OverrideThirdPartyAspect {
 
-    @Around("execution(@com.thirdOverride.aspect.OverrideThirdParty * * (..)) && @annotation(overrideThirdPartyAnnotation)")
-    public Object checkOverrideThirdParty(ProceedingJoinPoint proceedingJoinPoint, OverrideThirdParty overrideThirdPartyAnnotation) {
-        Object res = null;
-        try {
+	public static final String ERROR_MESSAGE = "it is possible your class needs to be updated";
 
-            Date overrideDate = convertToDateTime(overrideThirdPartyAnnotation.overrideDateValue(), overrideThirdPartyAnnotation.overrideDateFormat());
-//            Signature signature = proceedingJoinPoint.getSignature();
-            
-            Class<?> superclass = proceedingJoinPoint.getTarget().getClass().getSuperclass();
-            Class<?> superClassForName = Class.forName(superclass.getName());
-            Date superClassDate = OverrideThirdPartyClassMapper.getInst().getClassDate(superClassForName.getName());
-            if (superClassDate.after(overrideDate)){
-                throw new RuntimeException("it is possible your class needs to be updated ");
-            }
-//            String longString = signature.toLongString();
-//            System.out.println(longString);
+	@Around("execution(@com.thirdOverride.aspect.OverrideThirdParty * * (..)) && @annotation(overrideThirdPartyAnnotation)")
+	public Object checkOverrideThirdParty(ProceedingJoinPoint proceedingJoinPoint,
+			OverrideThirdParty overrideThirdPartyAnnotation) throws Throwable {
+		Object res = null;
+		System.out.println("aspect check");
+		Date overrideDate = convertToDateTime(overrideThirdPartyAnnotation.overrideDateValue(),
+				overrideThirdPartyAnnotation.overrideDateFormat());
+		// Signature signature = proceedingJoinPoint.getSignature();
 
-            res = proceedingJoinPoint.proceed();
+		Class<?> superclass = proceedingJoinPoint.getTarget().getClass().getSuperclass();
+		Class<?> superClassForName = Class.forName(superclass.getName());
+		Date superClassDate = OverrideThirdPartyClassMapper.getInst().getClassDate(superClassForName.getName());
+		if (superClassDate != null && superClassDate.after(overrideDate)) {
+			throw new RuntimeException(ERROR_MESSAGE);
+		} else {
+			// TODO: check if class should have been loaded to classloader
+			System.out.println("************************" + superClassForName.getName() + " date:" + superClassDate);
+		}
+		// String longString = signature.toLongString();
+		// System.out.println(longString);
 
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        return res;
-    }
+		res = proceedingJoinPoint.proceed();
 
-    private Date convertToDateTime(String overrideDateValue, String overrideDateFormat) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat(overrideDateFormat);
-        Date parse = formatter.parse(overrideDateValue);
-        return parse;
-    }
+		return res;
+	}
+
+	private Date convertToDateTime(String overrideDateValue, String overrideDateFormat) throws ParseException {
+		SimpleDateFormat formatter = new SimpleDateFormat(overrideDateFormat);
+		Date parse = formatter.parse(overrideDateValue);
+		return parse;
+	}
 }
