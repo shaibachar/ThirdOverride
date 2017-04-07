@@ -38,14 +38,13 @@ By annotating the date when you extended the artifact file the aspect with check
 			<version>4.11</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/log4j/log4j -->
 		<dependency>
-			<groupId>test</groupId>
-			<artifactId>com.test</artifactId>
-			<version>1.0</version>
-			<type>jar</type>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/src/main/resources/fatherClass.jar</systemPath>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
 		</dependency>
+
 	</dependencies>
 
 	<build>

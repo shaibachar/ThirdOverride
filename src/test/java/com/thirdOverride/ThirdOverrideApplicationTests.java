@@ -1,9 +1,12 @@
 package com.thirdOverride;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import com.thirdOverride.aspect.OverrideThirdPartyAspect;
 import com.thirdOverride.dataTypes.TestNegObjectChild;
@@ -11,30 +14,28 @@ import com.thirdOverride.dataTypes.TestPosObjectChild;
 
 public class ThirdOverrideApplicationTests {
 
-	private TestNegObjectChild testNegObjectChild;
-
-	private TestPosObjectChild testPosObjectChild;
-
-	@Rule
-	public ExpectedException expectedEx = ExpectedException.none();
-
 	@Before
 	public void init() {
-		testNegObjectChild = new TestNegObjectChild();
-		testPosObjectChild = new TestPosObjectChild();
 	}
 
 	@Test
-	public void negativeTest() throws Exception {
-		expectedEx.expect(RuntimeException.class);
-		expectedEx.expectMessage(OverrideThirdPartyAspect.ERROR_MESSAGE);
-		testNegObjectChild.printer();
+	public void negativeTest()  {
+		try {
+			Logger logger2 = TestNegObjectChild.getLogger("");
+		} catch (Exception e) {
+			Assert.assertEquals("expect to have RuntimeException",new RuntimeException(OverrideThirdPartyAspect.ERROR_MESSAGE), e);
+		}
 
 	}
 
 	@Test
 	public void positiveTest() {
-		testPosObjectChild.printer();
+
+		Logger logger2 = TestPosObjectChild.getLogger("");
+		logger2.setLevel(Level.INFO);
+		logger2.addAppender(new ConsoleAppender(
+                new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN)));
+		logger2.info("positiveTest pass");
 	}
 
 }
