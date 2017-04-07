@@ -19,13 +19,17 @@ public class ThirdOverrideApplicationTests {
 	}
 
 	@Test
-	public void negativeTest()  {
+	public void negativeTest() {
+		boolean exception = false;
 		try {
 			Logger logger2 = TestNegObjectChild.getLogger("");
 		} catch (Exception e) {
-			Assert.assertEquals("expect to have RuntimeException",new RuntimeException(OverrideThirdPartyAspect.ERROR_MESSAGE), e);
+			Assert.assertEquals("expect to have message", e.getMessage(), OverrideThirdPartyAspect.ERROR_MESSAGE);
+			Assert.assertTrue(e instanceof RuntimeException);
+			exception = true;
 		}
 
+		Assert.assertTrue(exception);
 	}
 
 	@Test
@@ -33,8 +37,7 @@ public class ThirdOverrideApplicationTests {
 
 		Logger logger2 = TestPosObjectChild.getLogger("");
 		logger2.setLevel(Level.INFO);
-		logger2.addAppender(new ConsoleAppender(
-                new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN)));
+		logger2.addAppender(new ConsoleAppender(new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN)));
 		logger2.info("positiveTest pass");
 	}
 

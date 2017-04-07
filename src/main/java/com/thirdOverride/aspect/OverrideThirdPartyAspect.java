@@ -24,35 +24,32 @@ public class OverrideThirdPartyAspect {
 				overrideThirdPartyAnnotation.overrideDateFormat());
 		// Signature signature = proceedingJoinPoint.getSignature();
 		System.out.println("overrideDate:" + overrideDate);
-		try {
-			String superClassName;
-			if (proceedingJoinPoint.getTarget() != null) {
-				Class<?> superclass = proceedingJoinPoint.getTarget().getClass().getSuperclass();
-				superClassName = superclass.getName();
-			} else {
-				String callerClassName = Thread.currentThread().getStackTrace()[1].getClassName();
-				Class<?> superClassForName = Class.forName(callerClassName).getSuperclass();
-				superClassName = superClassForName.getName();
-			}
-			System.out.println("superClassName:"+superClassName);
-			Class<?> superClassForName = Class.forName(superClassName);
-			Date superClassDate = OverrideThirdPartyClassMapper.getInst().getClassDate(superClassForName.getName());
-			System.out.println("superClassDate:" + superClassDate);
-			if (superClassDate != null && superClassDate.after(overrideDate)) {
-				System.out.println(ERROR_MESSAGE);
-				throw new RuntimeException(ERROR_MESSAGE);
-			} else {
-				// TODO: check if class should have been loaded to classloader
-				System.out
-						.println("************************" + superClassForName.getName() + " date:" + superClassDate);
-			}
-			// String longString = signature.toLongString();
-			// System.out.println(longString);
 
-			res = proceedingJoinPoint.proceed();
-		} catch (Exception e) {
-			e.printStackTrace();
+		String superClassName;
+		if (proceedingJoinPoint.getTarget() != null) {
+			Class<?> superclass = proceedingJoinPoint.getTarget().getClass().getSuperclass();
+			superClassName = superclass.getName();
+		} else {
+			String callerClassName = Thread.currentThread().getStackTrace()[1].getClassName();
+			Class<?> superClassForName = Class.forName(callerClassName).getSuperclass();
+			superClassName = superClassForName.getName();
 		}
+		System.out.println("superClassName:" + superClassName);
+		Class<?> superClassForName = Class.forName(superClassName);
+		Date superClassDate = OverrideThirdPartyClassMapper.getInst().getClassDate(superClassForName.getName());
+		System.out.println("superClassDate:" + superClassDate);
+		if (superClassDate != null && superClassDate.after(overrideDate)) {
+			System.out.println(ERROR_MESSAGE);
+			throw new RuntimeException(ERROR_MESSAGE);
+		} else {
+			// TODO: check if class should have been loaded to classloader
+			System.out.println("************************" + superClassForName.getName() + " date:" + superClassDate);
+		}
+		// String longString = signature.toLongString();
+		// System.out.println(longString);
+
+		res = proceedingJoinPoint.proceed();
+
 		return res;
 	}
 
